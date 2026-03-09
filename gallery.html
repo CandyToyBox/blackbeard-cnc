@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blackbeard CNC | Gallery & Request Form</title>
+    <meta
+      name="description"
+      content="Browse completed Blackbeard CNC work and submit quote or work-order requests with attachments."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="brand-stack">
+          <img class="brand-mark" src="/Untitled design (43).png" alt="Blackbeard CNC logo" />
+          <div>
+            <div class="brand-name">Blackbeard CNC</div>
+            <div class="brand-sub">Completed Work + Intake</div>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <a class="nav-link" href="/index.html">Home</a>
+          <a class="nav-link" href="mailto:blackbeardcnc@outlook.com">Email</a>
+          <a class="button button-primary" href="#request-form">Start Request</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container gallery-layout">
+        <section>
+          <div class="section-head">
+            <h1 class="section-title">Completed Work</h1>
+            <p class="section-note">Additions appear immediately after admin upload</p>
+          </div>
+          <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
+          <p id="gallery-status" class="muted"></p>
+        </section>
+
+        <aside id="request-form" class="panel form-shell">
+          <p class="kicker">Quote or Work Order</p>
+          <h2>Send Project Details</h2>
+          <p>
+            Files accepted: image, PDF, DXF. Up to 3 files, max 10MB each. Request goes to
+            <strong>blackbeardcnc@outlook.com</strong>.
+          </p>
+
+          <form id="quote-form" class="form-grid" novalidate>
+            <div class="two">
+              <label>
+                Name *
+                <input name="name" required />
+              </label>
+              <label>
+                Phone *
+                <input name="phone" required />
+              </label>
+            </div>
+
+            <div class="two">
+              <label>
+                Email *
+                <input name="email" type="email" required />
+              </label>
+              <label>
+                Request Type *
+                <select name="requestType" required>
+                  <option value="">Choose one</option>
+                  <option value="quote">Quote</option>
+                  <option value="work_order">Work Order</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="two">
+              <label>
+                Company
+                <input name="company" />
+              </label>
+              <label>
+                Material
+                <input name="material" placeholder="Steel, stainless, aluminum..." />
+              </label>
+            </div>
+
+            <div class="two">
+              <label>
+                Dimensions
+                <input name="dimensions" placeholder="e.g. 24in x 18in" />
+              </label>
+              <label>
+                Quantity
+                <input name="quantity" />
+              </label>
+            </div>
+
+            <div class="two">
+              <label>
+                Timeline
+                <input name="timeline" placeholder="Need-by date or timeframe" />
+              </label>
+              <label>
+                Budget
+                <input name="budget" placeholder="Optional budget range" />
+              </label>
+            </div>
+
+            <label>
+              Project Description *
+              <textarea name="projectDescription" required></textarea>
+            </label>
+
+            <label>
+              Additional Notes
+              <textarea name="notes"></textarea>
+            </label>
+
+            <label>
+              Upload Files (max 3)
+              <input id="file-input" name="files" type="file" multiple accept="image/*,.pdf,.dxf,application/pdf,application/dxf,image/vnd.dxf" />
+            </label>
+            <div id="file-help" class="muted">No files selected.</div>
+
+            <label class="hidden" aria-hidden="true">
+              Leave this empty
+              <input name="website" autocomplete="off" tabindex="-1" />
+            </label>
+
+            <button id="submit-btn" class="button button-primary" type="submit">Send Request</button>
+            <p id="form-status" class="status" role="status"></p>
+          </form>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div>Blackbeard CNC LLC • (817) 455-8204</div>
+        <div><a href="/admin.html">Admin Photo Manager</a></div>
+      </div>
+    </footer>
+
+    <script type="module" src="/gallery.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/admin-auth/login",
+      "destination": "/api/admin-auth?action=login"
+    },
+    {
+      "source": "/api/admin-auth/logout",
+      "destination": "/api/admin-auth?action=logout"
+    },
+    {
+      "source": "/api/admin-photos/:id",
+      "destination": "/api/admin-photos?id=:id"
+    }
+  ]
+}

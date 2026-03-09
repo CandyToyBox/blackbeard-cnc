@@ -1,0 +1,92 @@
+[
+  {
+    "id": "seed-1",
+    "title": "Blackbeard Plasma Shop Sign",
+    "category": "Signs",
+    "alt": "Blackbeard CNC Plasma Cutting steel sign",
+    "url": "/1.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-2",
+    "title": "Custom Guitar Pick Sign",
+    "category": "Custom Cuts",
+    "alt": "Custom metal guitar pick sign cutout",
+    "url": "/2.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-3",
+    "title": "Scott Glass Guitar Body",
+    "category": "Custom Cuts",
+    "alt": "Custom plasma cut guitar body shape",
+    "url": "/3.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-4",
+    "title": "Spiderweb Bracket",
+    "category": "Fab Parts",
+    "alt": "Steel triangular bracket with spiderweb cutout",
+    "url": "/4.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-5",
+    "title": "Welding Cart Build",
+    "category": "Fab Parts",
+    "alt": "Custom welding cart with gas bottle holder",
+    "url": "/5.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-6",
+    "title": "Spiderweb Gas Holder",
+    "category": "Fab Parts",
+    "alt": "Gas bottle holder bracket with spiderweb accents",
+    "url": "/6.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-7",
+    "title": "Neighbor's Envy Lawn Sign",
+    "category": "Signs",
+    "alt": "Green powder-coated lawn service sign",
+    "url": "/7.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-8",
+    "title": "Powder-Coated Sign Angle",
+    "category": "Signs",
+    "alt": "Angled view of green powder-coated custom sign",
+    "url": "/8.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-9",
+    "title": "Blackbeard Mudflap Plates",
+    "category": "Custom Cuts",
+    "alt": "Black metal plates with red Blackbeard text",
+    "url": "/9.png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  },
+  {
+    "id": "seed-10",
+    "title": "Brown Bomber Wall Art",
+    "category": "Signs",
+    "alt": "Rust patina custom truck sign reading Brown Bomber",
+    "url": "/Untitled design (42).png",
+    "source": "seed",
+    "createdAt": "2026-03-09T00:00:00.000Z"
+  }
+]

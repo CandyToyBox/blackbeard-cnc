@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blackbeard CNC | Admin Photo Manager</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/site.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="brand-stack">
+          <img class="brand-mark" src="/Untitled design (43).png" alt="Blackbeard CNC logo" />
+          <div>
+            <div class="brand-name">Blackbeard CNC</div>
+            <div class="brand-sub">Admin Photo Manager</div>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <a class="nav-link" href="/index.html">Home</a>
+          <a class="nav-link" href="/gallery.html">Gallery</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container admin-shell">
+        <aside class="panel admin-column">
+          <p class="kicker">Protected Area</p>
+          <h1 class="section-title">Admin Access</h1>
+          <form id="login-form" class="form-grid">
+            <label>
+              Passcode
+              <input id="passcode" type="password" required />
+            </label>
+            <button class="button button-primary" type="submit">Login</button>
+          </form>
+
+          <div id="admin-tools" class="hidden">
+            <p class="muted">Logged in. Upload new gallery photos or update existing photo titles.</p>
+            <button id="logout-btn" class="button" type="button">Logout</button>
+          </div>
+
+          <p id="auth-status" class="status"></p>
+        </aside>
+
+        <section id="manager-panel" class="panel admin-column hidden">
+          <div class="section-head">
+            <h2 class="section-title">Manage Photos</h2>
+            <button id="refresh-btn" class="button" type="button">Refresh</button>
+          </div>
+
+          <form id="upload-form" class="form-grid">
+            <div class="two">
+              <label>
+                Title *
+                <input name="title" required />
+              </label>
+              <label>
+                Category
+                <input name="category" placeholder="Signs, Fab Parts, Custom Cuts..." />
+              </label>
+            </div>
+
+            <label>
+              Alt text
+              <input name="alt" placeholder="Describe what is visible in the photo" />
+            </label>
+
+            <label>
+              Photo file *
+              <input name="photo" id="photo-file" type="file" accept="image/*" required />
+            </label>
+
+            <button id="upload-btn" class="button button-primary" type="submit">Upload Photo</button>
+            <p id="upload-status" class="status"></p>
+          </form>
+
+          <div id="photos-list" class="admin-grid"></div>
+          <p id="manager-status" class="muted"></p>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="/admin.js"></script>
+  </body>
+</html>
