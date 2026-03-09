@@ -293,6 +293,82 @@
         .ch-tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
         .ch-br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
 
+        .img-placeholder { cursor: zoom-in; }
+
+        /* Lightbox */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.92);
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+        }
+        #lightbox.open { display: flex; }
+
+        #lightbox-inner {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            border: 1px solid var(--grey-mid);
+            box-shadow: 0 0 40px rgba(255,26,26,0.15);
+        }
+
+        #lightbox-img {
+            display: block;
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        #lightbox-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 10px 15px;
+            background: rgba(5,5,5,0.85);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--grey-mid);
+            border-top: 1px solid var(--grey-dark);
+        }
+
+        #lightbox-close {
+            position: absolute;
+            top: -36px; right: 0;
+            color: var(--grey-mid);
+            font-size: 11px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: var(--font-mono);
+        }
+        #lightbox-close:hover { color: var(--red); }
+
+        #lightbox-prev, #lightbox-next {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(5,5,5,0.8);
+            border: 1px solid var(--grey-mid);
+            color: var(--grey-mid);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 15px 12px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.15s;
+            z-index: 1001;
+        }
+        #lightbox-prev { left: 20px; }
+        #lightbox-next { right: 20px; }
+        #lightbox-prev:hover, #lightbox-next:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
         @media (max-width: 1024px) {
             #ui-layer { grid-template-columns: 40px 1fr; }
             .sidebar-right { display: none; }
@@ -478,6 +554,17 @@
         </aside>
     </main>
 
+    <!-- Lightbox -->
+    <div id="lightbox">
+        <div id="lightbox-inner">
+            <button id="lightbox-close">[ CLOSE / ESC ]</button>
+            <img id="lightbox-img" src="" alt="">
+            <div id="lightbox-label"></div>
+        </div>
+        <button id="lightbox-prev">&lt; PREV</button>
+        <button id="lightbox-next">NEXT &gt;</button>
+    </div>
+
     <script>
         // Three.js animated metal grit background
         const container = document.getElementById('canvas-container');
@@ -551,6 +638,77 @@
                     card.style.display = (filter === 'all' || card.dataset.category === filter) ? 'flex' : 'none';
                 });
             });
+        });
+
+        // Lightbox
+        const lightbox     = document.getElementById('lightbox');
+        const lbImg        = document.getElementById('lightbox-img');
+        const lbLabel      = document.getElementById('lightbox-label');
+        const lbClose      = document.getElementById('lightbox-close');
+        const lbPrev       = document.getElementById('lightbox-prev');
+        const lbNext       = document.getElementById('lightbox-next');
+
+        let gallery = [];   // [{src, label}]
+        let current = 0;
+
+        function buildGallery() {
+            gallery = [];
+            document.querySelectorAll('.project-card').forEach(card => {
+                if (card.style.display === 'none') return;
+                const img  = card.querySelector('.img-placeholder img');
+                const title = card.querySelector('.card-title')?.textContent ?? '';
+                const label = card.querySelector('.sys-label')?.textContent ?? '';
+                if (img) gallery.push({ src: img.src, alt: img.alt, label: `${label} — ${title}` });
+            });
+        }
+
+        function openLightbox(src) {
+            buildGallery();
+            current = gallery.findIndex(g => g.src === src);
+            if (current === -1) current = 0;
+            showSlide(current);
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function showSlide(idx) {
+            const item = gallery[idx];
+            if (!item) return;
+            lbImg.src = item.src;
+            lbImg.alt = item.alt;
+            lbLabel.textContent = item.label;
+            lbPrev.style.display = gallery.length > 1 ? 'block' : 'none';
+            lbNext.style.display = gallery.length > 1 ? 'block' : 'none';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.img-placeholder.has-photo').forEach(el => {
+            el.addEventListener('click', () => openLightbox(el.querySelector('img').src));
+        });
+
+        lbClose.addEventListener('click', e => { e.stopPropagation(); closeLightbox(); });
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+        lbPrev.addEventListener('click', e => {
+            e.stopPropagation();
+            current = (current - 1 + gallery.length) % gallery.length;
+            showSlide(current);
+        });
+        lbNext.addEventListener('click', e => {
+            e.stopPropagation();
+            current = (current + 1) % gallery.length;
+            showSlide(current);
+        });
+
+        document.addEventListener('keydown', e => {
+            if (!lightbox.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft')  { current = (current - 1 + gallery.length) % gallery.length; showSlide(current); }
+            if (e.key === 'ArrowRight') { current = (current + 1) % gallery.length; showSlide(current); }
         });
     </script>
 </body>
