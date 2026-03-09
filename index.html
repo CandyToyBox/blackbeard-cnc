@@ -1,149 +1,577 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blackbeard CNC | Custom Plasma Cutting</title>
-    <meta
-      name="description"
-      content="Blackbeard CNC LLC delivers custom plasma cutting, metal fabrication, and signs for one-off and production projects."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/site.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="container topbar-inner">
-        <div class="brand-stack">
-          <img class="brand-mark" src="/Untitled design (43).png" alt="Blackbeard CNC logo" />
-          <div>
-            <div class="brand-name">Blackbeard CNC</div>
-            <div class="brand-sub">Custom Plasma Cutting</div>
-          </div>
-        </div>
-        <nav class="nav-links">
-          <a class="nav-link" href="/gallery.html">Gallery + Request</a>
-          <a class="nav-link" href="tel:+18174558204">(817) 455-8204</a>
-          <a class="button button-primary" href="mailto:blackbeardcnc@outlook.com">Email Blackbeard</a>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackbeard CNC | Precision Plasma</title>
+    <meta name="description" content="Blackbeard CNC LLC — custom plasma cutting, metal fabrication, and industrial signs. Texas-based. Fast quotes. (817) 455-8204">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --black: #050505;
+            --grey-dark: #1a1a1a;
+            --grey-mid: #4a4a4a;
+            --grey-light: #8a8a8a;
+            --red: #FF1A1A;
+            --red-glow: 0 0 10px rgba(255, 26, 26, 0.8), 0 0 20px rgba(255, 26, 26, 0.4);
+            --font-display: 'Teko', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+            --grid-gap: 2px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
+
+        body {
+            background-color: var(--black);
+            color: var(--grey-light);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.4;
+            overflow-x: hidden;
+            text-transform: uppercase;
+        }
+
+        ::selection { background: var(--red); color: var(--black); }
+
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none; opacity: 0.85;
+        }
+
+        .vignette-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, transparent 20%, var(--black) 90%);
+            z-index: 1; pointer-events: none;
+        }
+
+        #ui-layer {
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: 60px 1fr 300px;
+            min-height: 100vh;
+            border-left: 1px solid var(--grey-mid);
+            border-right: 1px solid var(--grey-mid);
+            max-width: 1800px;
+            margin: 0 auto;
+            background: linear-gradient(90deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0.4) 50%, rgba(5,5,5,0.9) 100%);
+        }
+
+        .axis-y {
+            border-right: 1px solid var(--grey-mid);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .axis-marker {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            color: var(--grey-mid);
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .axis-lines {
+            width: 100%;
+            height: 50%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent, transparent 4px,
+                var(--grey-dark) 4px, var(--grey-dark) 5px
+            );
+        }
+
+        .core-content {
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+        }
+
+        header { position: relative; }
+
+        .sys-label {
+            color: var(--red);
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: inline-block;
+            border-bottom: 1px solid var(--red);
+            padding-bottom: 2px;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(6rem, 12vw, 14rem);
+            line-height: 0.8;
+            color: var(--grey-light);
+            margin-left: -10px;
+            letter-spacing: -2px;
+            mix-blend-mode: hard-light;
+        }
+
+        .brand-highlight {
+            color: var(--red);
+            text-shadow: var(--red-glow);
+            display: block;
+        }
+
+        .strikethrough-block {
+            position: relative;
+            display: inline-block;
+        }
+
+        .strikethrough-block::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: -5%;
+            width: 110%; height: 4px;
+            background: var(--red);
+            box-shadow: var(--red-glow);
+            transform: translateY(-50%);
+            mix-blend-mode: overlay;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--grey-mid);
+            border-top: 1px solid var(--grey-dark);
+            padding-top: 10px;
+        }
+
+        .torch-container {
+            position: absolute;
+            right: 0; top: 20%;
+            width: 150px; height: 300px;
+            opacity: 0.8;
+        }
+
+        .torch-svg {
+            width: 100%; height: 100%;
+            stroke: var(--grey-light);
+            stroke-width: 1.5;
+            fill: none;
+            overflow: visible;
+        }
+
+        .plasma-beam {
+            stroke: var(--red);
+            stroke-width: 3;
+            filter: drop-shadow(0 0 8px var(--red));
+            animation: pulse-beam 0.1s infinite alternate;
+        }
+
+        @keyframes pulse-beam {
+            0% { opacity: 0.8; stroke-width: 2; }
+            100% { opacity: 1; stroke-width: 4; }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--grey-light);
+            line-height: 1;
+        }
+
+        .header-line {
+            flex-grow: 1;
+            height: 1px;
+            background: var(--grey-dark);
+            position: relative;
+        }
+
+        .header-line::before {
+            content: '';
+            position: absolute;
+            left: 0; top: -2px;
+            width: 5px; height: 5px;
+            background: var(--red);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1px;
+            background: var(--grey-dark);
+            border: 1px solid var(--grey-dark);
+        }
+
+        .service-card {
+            background: var(--black);
+            padding: 30px;
+            position: relative;
+        }
+
+        .service-card:hover { background: #0a0a0a; }
+        .service-card:hover .service-title { color: var(--red); text-shadow: var(--red-glow); }
+
+        .service-id { position: absolute; top: 10px; right: 10px; font-size: 9px; color: var(--grey-mid); }
+
+        .service-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--grey-light);
+            margin-bottom: 15px;
+            line-height: 1;
+        }
+
+        .service-list { list-style: none; }
+        .service-list li { position: relative; padding-left: 15px; margin-bottom: 8px; color: var(--grey-light); }
+        .service-list li::before { content: '>'; position: absolute; left: 0; color: var(--red); }
+
+        .sidebar-right {
+            border-left: 1px solid var(--grey-mid);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            width: 100%;
+            max-width: 160px;
+            display: block;
+            margin: 0 auto;
+            mix-blend-mode: multiply;
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(330deg);
+            opacity: 0.85;
+        }
+
+        .terminal-block {
+            border: 1px solid var(--grey-dark);
+            padding: 15px;
+            background: rgba(10, 10, 10, 0.8);
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--grey-mid);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-size: 10px;
+            color: var(--grey-mid);
+        }
+
+        .g-code-scroll {
+            height: 120px;
+            overflow: hidden;
+            color: var(--grey-mid);
+            font-size: 10px;
+            line-height: 1.2;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+
+        .contact-grid { display: grid; gap: 15px; }
+        .contact-item { display: flex; flex-direction: column; }
+        .contact-label { font-size: 9px; color: var(--grey-mid); margin-bottom: 2px; }
+        .contact-value { font-size: 14px; color: var(--grey-light); text-decoration: none; }
+        .contact-value:hover { color: var(--red); text-shadow: var(--red-glow); }
+
+        .btn-action {
+            display: inline-block;
+            border: 1px solid var(--red);
+            color: var(--red);
+            padding: 15px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            letter-spacing: 2px;
+            background: transparent;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--red);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.15s ease-in;
+            z-index: -1;
+        }
+
+        .btn-action:hover { color: var(--black); box-shadow: var(--red-glow); }
+        .btn-action:hover::before { transform: scaleX(1); transform-origin: left; }
+
+        .crosshair { position: absolute; width: 20px; height: 20px; pointer-events: none; }
+        .crosshair::before, .crosshair::after { content: ''; position: absolute; background: var(--grey-mid); }
+        .crosshair::before { top: 50%; left: 0; width: 100%; height: 1px; }
+        .crosshair::after { top: 0; left: 50%; width: 1px; height: 100%; }
+        .ch-tl { top: 10px; left: 10px; }
+        .ch-br { bottom: 10px; right: 10px; }
+
+        @media (max-width: 1024px) {
+            #ui-layer { grid-template-columns: 40px 1fr; }
+            .sidebar-right { display: none; }
+            h1 { font-size: 5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+    <div class="vignette-overlay"></div>
+
+    <main id="ui-layer">
+
+        <nav class="axis-y">
+            <span class="axis-marker">SYS.INIT.01</span>
+            <div class="axis-lines"></div>
+            <span class="axis-marker">BB-CNC-OS</span>
         </nav>
-      </div>
-    </header>
 
-    <main>
-      <section class="hero">
-        <div class="container hero-grid">
-          <article class="panel hero-copy">
-            <p class="kicker">Texas Metal Work • Precision Plasma</p>
-            <h1>Custom Plasma Cutting for Signs, Parts, and Fabrication</h1>
-            <p class="hero-text">
-              Blackbeard CNC LLC builds durable custom metal work from concept to cut. Send a quote request with files,
-              dimensions, and details, and get a fast response for one-off jobs or repeat production runs.
-            </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="/gallery.html#request-form">Start a Quote</a>
-              <a class="button" href="/gallery.html">View Completed Work</a>
+        <div class="core-content">
+            <header>
+                <span class="sys-label">OP-MODE: ACTIVE PLASMA</span>
+                <div class="crosshair ch-tl"></div>
+                <div class="crosshair ch-br"></div>
+
+                <h1 class="strikethrough-block">BLACKBEARD</h1>
+                <h1 class="brand-highlight">CNC LLC.</h1>
+
+                <div class="hero-meta">
+                    <div><span class="sys-label">COORD</span><br>32.7767° N, 96.7970° W</div>
+                    <div><span class="sys-label">TEMP</span><br>30,000°F MAX</div>
+                    <div><span class="sys-label">TOLERANCE</span><br>±0.015 INCHES</div>
+                </div>
+
+                <div class="torch-container">
+                    <svg class="torch-svg" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 50 0 L 50 40" stroke-dasharray="2 2"></path>
+                        <rect x="35" y="40" width="30" height="80" rx="2"></rect>
+                        <line x1="35" y1="50" x2="65" y2="50"></line>
+                        <line x1="35" y1="60" x2="65" y2="60"></line>
+                        <line x1="35" y1="70" x2="65" y2="70"></line>
+                        <line x1="35" y1="80" x2="65" y2="80"></line>
+                        <line x1="35" y1="90" x2="65" y2="90"></line>
+                        <line x1="35" y1="100" x2="65" y2="100"></line>
+                        <rect x="25" y="60" width="10" height="30" fill="var(--black)"></rect>
+                        <polygon points="30,120 70,120 60,140 40,140"></polygon>
+                        <polygon points="40,140 60,140 52,155 48,155" fill="var(--black)"></polygon>
+                        <line x1="0" y1="190" x2="100" y2="190" stroke="var(--grey-mid)" stroke-width="2"></line>
+                        <line x1="50" y1="155" x2="50" y2="190" class="plasma-beam"></line>
+                        <circle cx="45" cy="180" r="1" fill="var(--red)"></circle>
+                        <circle cx="58" cy="185" r="1.5" fill="var(--red)"></circle>
+                        <circle cx="42" cy="188" r="0.5" fill="#fff"></circle>
+                    </svg>
+                </div>
+            </header>
+
+            <section id="services">
+                <div class="section-header">
+                    <h2>OPERATIONAL CAPABILITIES</h2>
+                    <div class="header-line"></div>
+                </div>
+
+                <div class="services-grid">
+                    <article class="service-card">
+                        <span class="service-id">CAP.01</span>
+                        <h3 class="service-title">METAL<br>FABRICATION</h3>
+                        <ul class="service-list">
+                            <li>Structural Components</li>
+                            <li>Sheet Metal Forming</li>
+                            <li>Precision TIG/MIG Welding</li>
+                            <li>Raw Steel Assembly</li>
+                        </ul>
+                    </article>
+                    <article class="service-card">
+                        <span class="service-id">CAP.02</span>
+                        <h3 class="service-title">CUSTOM<br>PARTS</h3>
+                        <ul class="service-list">
+                            <li>Rapid Prototyping</li>
+                            <li>Batch Production Runs</li>
+                            <li>High-Tolerance Cutouts</li>
+                            <li>Machine Replacements</li>
+                        </ul>
+                    </article>
+                    <article class="service-card">
+                        <span class="service-id">CAP.03</span>
+                        <h3 class="service-title">INDUSTRIAL<br>SIGNS</h3>
+                        <ul class="service-list">
+                            <li>Stencil Cut Typography</li>
+                            <li>Multilayer Steel Displays</li>
+                            <li>Backlit Plasma Cuts</li>
+                            <li>Heavy Duty Branding</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+        </div>
+
+        <aside class="sidebar-right">
+            <img src="logo.png" alt="Blackbeard CNC Plasma" class="sidebar-logo">
+
+            <div class="terminal-block">
+                <div class="terminal-header">
+                    <span>G-CODE LOG</span>
+                    <span style="color:var(--red)">REC</span>
+                </div>
+                <div class="g-code-scroll" id="gcode-display">
+                    N10 G20<br>
+                    N20 G90<br>
+                    N30 M06 T1 (Plasma Torch)<br>
+                    N40 G00 X0.0 Y0.0<br>
+                    N50 M03 S1000<br>
+                    N60 G00 Z0.1<br>
+                    N70 G01 Z-0.05 F20.0<br>
+                    N80 G01 X10.0 Y0.0 F50.0<br>
+                    N90 G01 X10.0 Y10.0<br>
+                    N100 G01 X0.0 Y10.0<br>
+                    N110 G01 X0.0 Y0.0<br>
+                    N120 M05<br>
+                    N130 G00 Z1.0<br>
+                </div>
             </div>
-          </article>
-          <aside class="panel hero-card">
-            <img src="/Untitled design (35).png" alt="Blackbeard CNC business card" />
-          </aside>
-        </div>
-        <div class="container grid-2">
-          <article class="panel metric">
-            <div class="metric-value">Metal Fab</div>
-            <div class="metric-label">Shop-built carts, holders, and custom assemblies</div>
-          </article>
-          <article class="panel metric">
-            <div class="metric-value">Signs + Parts</div>
-            <div class="metric-label">Decorative signs and practical plasma-cut components</div>
-          </article>
-        </div>
-      </section>
 
-      <section class="section">
-        <div class="container">
-          <div class="section-head">
-            <h2 class="section-title">Capabilities</h2>
-            <p class="section-note">Built for custom jobs and repeat production</p>
-          </div>
-          <div class="services">
-            <article class="panel service-card">
-              <h3>Custom Signs</h3>
-              <p>
-                Branded business signs, ranch signs, and decorative pieces in raw steel or powder-coated finishes.
-              </p>
-            </article>
-            <article class="panel service-card">
-              <h3>Fabrication Parts</h3>
-              <p>
-                Precision-cut components for tool carts, brackets, bottle holders, and fit-up ready fabrication work.
-              </p>
-            </article>
-            <article class="panel service-card">
-              <h3>One-Off Designs</h3>
-              <p>
-                Customer-provided concepts converted to cut-ready parts. Upload your files directly in the request form.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
+            <div class="terminal-block contact-grid">
+                <div class="terminal-header">
+                    <span>COMMS LINK</span>
+                    <span>ONLINE</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">FREQ / VOICE</span>
+                    <a href="tel:8174558204" class="contact-value">(817) 455-8204</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">DATA / MAIL</span>
+                    <a href="mailto:blackbeardcnc@outlook.com" class="contact-value">blackbeardcnc@outlook.com</a>
+                </div>
+            </div>
 
-      <section class="section">
-        <div class="container">
-          <div class="section-head">
-            <h2 class="section-title">How Work Orders Flow</h2>
-            <p class="section-note">Clear process from inquiry to pickup</p>
-          </div>
-          <div class="process-list">
-            <article class="panel process-step">
-              <span class="num">1</span>
-              <div>
-                Submit your quote or work-order details with files, dimensions, and timeline targets.
-              </div>
-            </article>
-            <article class="panel process-step">
-              <span class="num">2</span>
-              <div>Blackbeard CNC reviews material requirements and confirms pricing and production details.</div>
-            </article>
-            <article class="panel process-step">
-              <span class="num">3</span>
-              <div>Cutting and finishing happens in-shop with updates shared as needed.</div>
-            </article>
-            <article class="panel process-step">
-              <span class="num">4</span>
-              <div>Completed job is ready for pickup or delivery based on the agreed schedule.</div>
-            </article>
-          </div>
-        </div>
-      </section>
+            <div class="terminal-block contact-grid">
+                <div class="terminal-header">
+                    <span>NETWORK VECTORS</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">INSTAGRAM</span>
+                    <a href="https://instagram.com/blackbeard_cnc" class="contact-value">@BLACKBEARD_CNC</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-label">FACEBOOK</span>
+                    <a href="https://facebook.com/blackbeardcncllc" class="contact-value">/BLACKBEARDCNCLLC</a>
+                </div>
+            </div>
 
-      <section class="container">
-        <article class="panel contact-band">
-          <div class="contact-lines">
-            <strong>Blackbeard CNC LLC</strong>
-            <a href="mailto:blackbeardcnc@outlook.com">blackbeardcnc@outlook.com</a>
-            <a href="tel:+18174558204">(817) 455-8204</a>
-          </div>
-          <a class="button button-primary" href="/gallery.html#request-form">Request Quote / Work Order</a>
-        </article>
-      </section>
+            <a href="gallery.html" class="btn-action">INITIATE WORK ORDER</a>
+        </aside>
+
     </main>
 
-    <footer class="footer">
-      <div class="container">
-        <div>© <span id="year"></span> Blackbeard CNC LLC</div>
-        <div><a href="/admin.html">Admin Photo Manager</a></div>
-      </div>
-    </footer>
-
     <script>
-      document.getElementById('year').textContent = new Date().getFullYear();
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const renderer = new THREE.WebGLRenderer({ alpha: false, antialias: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const vertexShader = `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 1.0); }`;
+        const fragmentShader = `
+            uniform float time;
+            uniform vec2 resolution;
+            varying vec2 vUv;
+            float random(in vec2 _st) { return fract(sin(dot(_st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
+            float noise(in vec2 _st) {
+                vec2 i = floor(_st); vec2 f = fract(_st);
+                float a = random(i); float b = random(i + vec2(1.0, 0.0));
+                float c = random(i + vec2(0.0, 1.0)); float d = random(i + vec2(1.0, 1.0));
+                vec2 u = f * f * (3.0 - 2.0 * f);
+                return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+            }
+            #define OCTAVES 5
+            float fbm(in vec2 _st) {
+                float v = 0.0; float a = 0.5;
+                vec2 shift = vec2(100.0);
+                mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+                for (int i = 0; i < OCTAVES; ++i) { v += a * noise(_st); _st = rot * _st * 2.0 + shift; a *= 0.5; }
+                return v;
+            }
+            void main() {
+                vec2 st = gl_FragCoord.xy/resolution.xy;
+                st.x *= resolution.x/resolution.y;
+                vec2 grit_st = st * 15.0;
+                grit_st.y += time * 0.05;
+                float f = fbm(grit_st);
+                float edge = smoothstep(0.4, 0.6, f);
+                float micro = random(st * 100.0 + time * 0.1);
+                vec3 colorBlack = vec3(0.02, 0.02, 0.02);
+                vec3 colorGrey = vec3(0.3, 0.3, 0.3);
+                vec3 finalColor = mix(colorBlack, colorGrey, edge);
+                finalColor -= (micro * 0.15) * edge;
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+        `;
+
+        const material = new THREE.ShaderMaterial({
+            vertexShader, fragmentShader,
+            uniforms: {
+                time: { value: 0 },
+                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+            }
+        });
+
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+        scene.add(mesh);
+
+        function animate(now) {
+            requestAnimationFrame(animate);
+            material.uniforms.time.value = now * 0.001;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
+        });
+
+        animate(0);
+
+        const gcodeDisplay = document.getElementById('gcode-display');
+        const gcodeLines = [
+            "N140 G00 X15.0 Y20.0","N150 M03 S1000","N160 G01 Z-0.05 F20.0",
+            "N170 G02 X20.0 Y15.0 I5.0 J0.0 F40.0","N180 G01 Y5.0",
+            "N190 G02 X15.0 Y0.0 I-5.0 J0.0","N200 M05","N210 G00 Z1.0",
+            "N220 G00 X0.0 Y0.0","N230 M30"
+        ];
+        setInterval(() => {
+            const lines = gcodeDisplay.innerHTML.split('<br>');
+            lines.shift();
+            const line = gcodeLines[Math.floor(Math.random() * gcodeLines.length)];
+            const processed = line.replace(/\d+\.\d+/g, m => (parseFloat(m) + (Math.random() * 0.2 - 0.1)).toFixed(3));
+            lines.push(processed);
+            gcodeDisplay.innerHTML = lines.join('<br>') + '<br>';
+        }, 1000);
     </script>
-  </body>
-</html>
+
+</body></html>

@@ -1,153 +1,573 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blackbeard CNC | Gallery & Request Form</title>
-    <meta
-      name="description"
-      content="Browse completed Blackbeard CNC work and submit quote or work-order requests with attachments."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/site.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="container topbar-inner">
-        <div class="brand-stack">
-          <img class="brand-mark" src="/Untitled design (43).png" alt="Blackbeard CNC logo" />
-          <div>
-            <div class="brand-name">Blackbeard CNC</div>
-            <div class="brand-sub">Completed Work + Intake</div>
-          </div>
-        </div>
-        <nav class="nav-links">
-          <a class="nav-link" href="/index.html">Home</a>
-          <a class="nav-link" href="mailto:blackbeardcnc@outlook.com">Email</a>
-          <a class="button button-primary" href="#request-form">Start Request</a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackbeard CNC | Project Archive</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --black: #050505;
+            --grey-dark: #1a1a1a;
+            --grey-mid: #4a4a4a;
+            --grey-light: #8a8a8a;
+            --red: #FF1A1A;
+            --red-glow: 0 0 10px rgba(255, 26, 26, 0.8), 0 0 20px rgba(255, 26, 26, 0.4);
+            --font-display: 'Teko', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
+
+        body {
+            background-color: var(--black);
+            color: var(--grey-light);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.4;
+            overflow-x: hidden;
+            text-transform: uppercase;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none; opacity: 0.85;
+        }
+
+        .vignette-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, transparent 20%, var(--black) 90%);
+            z-index: 1; pointer-events: none;
+        }
+
+        #ui-layer {
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: 60px 1fr 300px;
+            min-height: 100vh;
+            border-left: 1px solid var(--grey-mid);
+            border-right: 1px solid var(--grey-mid);
+            max-width: 1440px;
+            margin: 0 auto;
+            background: linear-gradient(90deg, rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.85) 50%, rgba(5,5,5,0.92) 100%);
+        }
+
+        .axis-y {
+            border-right: 1px solid var(--grey-mid);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .axis-marker {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            color: var(--grey-mid);
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .core-content {
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .sys-label {
+            color: var(--red);
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            display: inline-block;
+            border-bottom: 1px solid var(--red);
+            padding-bottom: 2px;
+        }
+
+        .page-header h1 {
+            font-family: var(--font-display);
+            font-size: 6rem;
+            line-height: 0.9;
+            color: var(--grey-light);
+            letter-spacing: -1px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 20px;
+            border-bottom: 1px solid var(--grey-dark);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--grey-mid);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            padding: 5px 10px;
+            transition: all 0.2s;
+            cursor: crosshair;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            color: var(--red);
+            border-bottom: 1px solid var(--red);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid var(--grey-dark);
+            position: relative;
+            transition: border-color 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-card:hover {
+            border-color: var(--red);
+            box-shadow: 0 0 15px rgba(255, 26, 26, 0.1);
+        }
+
+        .img-placeholder {
+            width: 100%;
+            height: 220px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            border-bottom: 1px solid var(--grey-dark);
+        }
+
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .img-placeholder::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, transparent 48%, var(--grey-dark) 50%, transparent 52%);
+            background-size: 10px 10px;
+            opacity: 0.2;
+        }
+
+        .img-placeholder.has-photo::after {
+            display: none;
+        }
+
+        .card-info {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--grey-light);
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+
+        .card-meta {
+            font-size: 10px;
+            color: var(--grey-mid);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .request-btn {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--grey-mid);
+            color: var(--grey-mid);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .project-card:hover .request-btn {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .project-card:hover .card-title {
+            color: var(--red);
+            text-shadow: var(--red-glow);
+        }
+
+        .sidebar-right {
+            border-left: 1px solid var(--grey-mid);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .terminal-block {
+            border: 1px solid var(--grey-dark);
+            padding: 15px;
+            background: rgba(10, 10, 10, 0.8);
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--grey-mid);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-size: 10px;
+            color: var(--grey-mid);
+        }
+
+        .g-code-scroll {
+            height: 300px;
+            overflow: hidden;
+            color: var(--grey-mid);
+            font-size: 10px;
+            line-height: 1.2;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+
+        .btn-action {
+            display: block;
+            border: 1px solid var(--red);
+            color: var(--red);
+            padding: 15px;
+            text-decoration: none;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-align: center;
+            transition: all 0.2s;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            cursor: crosshair;
+        }
+
+        .btn-action:hover {
+            background: var(--red);
+            color: var(--black);
+            box-shadow: var(--red-glow);
+        }
+
+        .crosshair {
+            position: absolute;
+            width: 10px; height: 10px;
+            border: 1px solid var(--grey-mid);
+            opacity: 0.5;
+        }
+        .ch-tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
+        .ch-br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
+
+        @media (max-width: 1024px) {
+            #ui-layer { grid-template-columns: 40px 1fr; }
+            .sidebar-right { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+    <div class="vignette-overlay"></div>
+
+    <main id="ui-layer">
+        <nav class="axis-y">
+            <span class="axis-marker">GALLERY.OBJ_v2.0</span>
+            <div style="flex-grow:1; width:1px; background:var(--grey-dark); margin:20px 0;"></div>
+            <span class="axis-marker">BB-CNC-OS</span>
         </nav>
-      </div>
-    </header>
 
-    <main class="section">
-      <div class="container gallery-layout">
-        <section>
-          <div class="section-head">
-            <h1 class="section-title">Completed Work</h1>
-            <p class="section-note">Additions appear immediately after admin upload</p>
-          </div>
-          <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
-          <p id="gallery-status" class="muted"></p>
-        </section>
+        <div class="core-content">
+            <header class="page-header">
+                <span class="sys-label">DATA ARCHIVE // COMPLETED CUTS</span>
+                <h1>PROJECT GALLERY</h1>
+            </header>
 
-        <aside id="request-form" class="panel form-shell">
-          <p class="kicker">Quote or Work Order</p>
-          <h2>Send Project Details</h2>
-          <p>
-            Files accepted: image, PDF, DXF. Up to 3 files, max 10MB each. Request goes to
-            <strong>blackbeardcnc@outlook.com</strong>.
-          </p>
+            <nav class="filter-bar">
+                <button class="filter-btn active" data-filter="all">ALL_OBJECTS</button>
+                <button class="filter-btn" data-filter="sign">SIGNS</button>
+                <button class="filter-btn" data-filter="fab">FAB_PARTS</button>
+                <button class="filter-btn" data-filter="custom">CUSTOM_CUTS</button>
+            </nav>
 
-          <form id="quote-form" class="form-grid" novalidate>
-            <div class="two">
-              <label>
-                Name *
-                <input name="name" required />
-              </label>
-              <label>
-                Phone *
-                <input name="phone" required />
-              </label>
+            <section class="gallery-grid" id="gallery-grid">
+
+                <article class="project-card" data-category="sign">
+                    <div class="ch-tl crosshair"></div><div class="ch-br crosshair"></div>
+                    <div class="img-placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--grey-dark)" stroke-width="0.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                        <span style="position:absolute; bottom:10px; right:10px; font-size:9px; color:var(--grey-mid);">IMG_0821.RAW</span>
+                    </div>
+                    <div class="card-info">
+                        <span class="sys-label">OBJ.01 // SIGN</span>
+                        <h3 class="card-title">GUITAR PICK SIGN</h3>
+                        <div class="card-meta">
+                            <span>MAT: COPPER</span>
+                            <span>USE: INTERIOR</span>
+                        </div>
+                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Guitar Pick Sign" class="request-btn">REQUEST THIS CUT</a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="custom">
+                    <div class="ch-tl crosshair"></div><div class="ch-br crosshair"></div>
+                    <div class="img-placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--grey-dark)" stroke-width="0.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                        <span style="position:absolute; bottom:10px; right:10px; font-size:9px; color:var(--grey-mid);">IMG_0944.RAW</span>
+                    </div>
+                    <div class="card-info">
+                        <span class="sys-label">OBJ.02 // CUSTOM</span>
+                        <h3 class="card-title">SCOTT GLASS BODY</h3>
+                        <div class="card-meta">
+                            <span>MAT: RAW STEEL</span>
+                            <span>TOL: &plusmn;0.010</span>
+                        </div>
+                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Scott Glass Body" class="request-btn">REQUEST THIS CUT</a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="fab">
+                    <div class="ch-tl crosshair"></div><div class="ch-br crosshair"></div>
+                    <div class="img-placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--grey-dark)" stroke-width="0.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="sys-label">OBJ.03 // FAB</span>
+                        <h3 class="card-title">SPIDERWEB BRACKET</h3>
+                        <div class="card-meta">
+                            <span>MAT: RAW STEEL</span>
+                            <span>QTY: BATCH RUN</span>
+                        </div>
+                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Spiderweb Bracket" class="request-btn">REQUEST THIS CUT</a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="fab">
+                    <div class="ch-tl crosshair"></div><div class="ch-br crosshair"></div>
+                    <div class="img-placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--grey-dark)" stroke-width="0.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="sys-label">OBJ.04 // FAB</span>
+                        <h3 class="card-title">GAS CYLINDER HOLDER</h3>
+                        <div class="card-meta">
+                            <span>DET: SPIDERWEB</span>
+                            <span>FAB: WELDED</span>
+                        </div>
+                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Gas Cylinder Holder" class="request-btn">REQUEST THIS CUT</a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="fab">
+                    <div class="ch-tl crosshair"></div><div class="ch-br crosshair"></div>
+                    <div class="img-placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--grey-dark)" stroke-width="0.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="sys-label">OBJ.05 // FAB</span>
+                        <h3 class="card-title">WELDING CART FAB</h3>
+                        <div class="card-meta">
+                            <span>MAT: MIXED STEEL</span>
+                            <span>MODE: TIG</span>
+                        </div>
+                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Welding Cart Fab" class="request-btn">REQUEST THIS CUT</a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="sign">
+                    <div class="ch-tl crosshair"></div><div class="ch-br crosshair"></div>
+                    <div class="img-placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--grey-dark)" stroke-width="0.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="sys-label">OBJ.06 // SIGN</span>
+                        <h3 class="card-title">NEIGHBOR'S ENVY</h3>
+                        <div class="card-meta">
+                            <span>CLR: GRN POWDER</span>
+                            <span>USE: EXTERIOR</span>
+                        </div>
+                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Neighbor's Envy Sign" class="request-btn">REQUEST THIS CUT</a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="custom">
+                    <div class="ch-tl crosshair"></div><div class="ch-br crosshair"></div>
+                    <div class="img-placeholder">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--grey-dark)" stroke-width="0.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="card-info">
+                        <span class="sys-label">OBJ.07 // CUSTOM</span>
+                        <h3 class="card-title">MUDFLAP CUTS</h3>
+                        <div class="card-meta">
+                            <span>CLR: BLK/RED</span>
+                            <span>QTY: 1 PAIR</span>
+                        </div>
+                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Mudflap Cuts" class="request-btn">REQUEST THIS CUT</a>
+                    </div>
+                </article>
+
+            </section>
+        </div>
+
+        <aside class="sidebar-right">
+            <div class="terminal-block">
+                <div class="terminal-header">
+                    <span>FEED: CUT_PARAM_LOG</span>
+                    <span style="color:var(--red)">ACTIVE</span>
+                </div>
+                <div class="g-code-scroll" id="gcode-display">
+                    N10 G20 (INCHES)<br>
+                    N20 G90 (ABSOLUTE)<br>
+                    N30 M06 T1 (PLASMA)<br>
+                    N40 G00 X4.125 Y2.330<br>
+                    N50 M03 S1000<br>
+                    N60 G01 Z-0.125 F30.0<br>
+                    N70 G01 X8.250 Y2.330<br>
+                    N80 G02 X10.5 Y4.5 I2.25 J2.17<br>
+                    N90 G01 X10.5 Y12.0<br>
+                    N100 G03 X8.25 Y14.25 I-2.25 J0<br>
+                    N110 G01 X4.125 Y14.25<br>
+                    N120 M05<br>
+                </div>
             </div>
 
-            <div class="two">
-              <label>
-                Email *
-                <input name="email" type="email" required />
-              </label>
-              <label>
-                Request Type *
-                <select name="requestType" required>
-                  <option value="">Choose one</option>
-                  <option value="quote">Quote</option>
-                  <option value="work_order">Work Order</option>
-                </select>
-              </label>
+            <div class="terminal-block">
+                <div class="terminal-header">
+                    <span>NAV_LINKS</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <a href="index.html" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; RETURN TO CONTROL</a>
+                    <a href="index.html#capabilities" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; CAPABILITIES</a>
+                    <a href="mailto:blackbeardcnc@outlook.com" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; CONTACT</a>
+                </div>
             </div>
 
-            <div class="two">
-              <label>
-                Company
-                <input name="company" />
-              </label>
-              <label>
-                Material
-                <input name="material" placeholder="Steel, stainless, aluminum..." />
-              </label>
-            </div>
-
-            <div class="two">
-              <label>
-                Dimensions
-                <input name="dimensions" placeholder="e.g. 24in x 18in" />
-              </label>
-              <label>
-                Quantity
-                <input name="quantity" />
-              </label>
-            </div>
-
-            <div class="two">
-              <label>
-                Timeline
-                <input name="timeline" placeholder="Need-by date or timeframe" />
-              </label>
-              <label>
-                Budget
-                <input name="budget" placeholder="Optional budget range" />
-              </label>
-            </div>
-
-            <label>
-              Project Description *
-              <textarea name="projectDescription" required></textarea>
-            </label>
-
-            <label>
-              Additional Notes
-              <textarea name="notes"></textarea>
-            </label>
-
-            <label>
-              Upload Files (max 3)
-              <input id="file-input" name="files" type="file" multiple accept="image/*,.pdf,.dxf,application/pdf,application/dxf,image/vnd.dxf" />
-            </label>
-            <div id="file-help" class="muted">No files selected.</div>
-
-            <label class="hidden" aria-hidden="true">
-              Leave this empty
-              <input name="website" autocomplete="off" tabindex="-1" />
-            </label>
-
-            <button id="submit-btn" class="button button-primary" type="submit">Send Request</button>
-            <p id="form-status" class="status" role="status"></p>
-          </form>
+            <a href="mailto:blackbeardcnc@outlook.com?subject=Work Order Request" class="btn-action">INITIATE WORK ORDER</a>
         </aside>
-      </div>
     </main>
 
-    <footer class="footer">
-      <div class="container">
-        <div>Blackbeard CNC LLC • (817) 455-8204</div>
-        <div><a href="/admin.html">Admin Photo Manager</a></div>
-      </div>
-    </footer>
+    <script>
+        // Three.js animated metal grit background
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const renderer = new THREE.WebGLRenderer({ alpha: false, antialias: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
 
-    <script type="module" src="/gallery.js"></script>
-  </body>
+        const vertexShader = `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 1.0); }`;
+        const fragmentShader = `
+            uniform float time;
+            uniform vec2 resolution;
+            varying vec2 vUv;
+            float random (in vec2 _st) { return fract(sin(dot(_st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
+            float noise (in vec2 _st) {
+                vec2 i = floor(_st); vec2 f = fract(_st);
+                float a = random(i); float b = random(i + vec2(1.0, 0.0));
+                float c = random(i + vec2(0.0, 1.0)); float d = random(i + vec2(1.0, 1.0));
+                vec2 u = f * f * (3.0 - 2.0 * f);
+                return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+            }
+            void main() {
+                vec2 st = gl_FragCoord.xy/resolution.xy;
+                float f = noise(st * 10.0 + time * 0.05);
+                vec3 color = mix(vec3(0.02), vec3(0.1), smoothstep(0.4, 0.6, f));
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        const material = new THREE.ShaderMaterial({
+            vertexShader, fragmentShader,
+            uniforms: {
+                time: { value: 0 },
+                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+            }
+        });
+
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+        scene.add(mesh);
+
+        function animate(now) {
+            requestAnimationFrame(animate);
+            material.uniforms.time.value = now * 0.001;
+            renderer.render(scene, camera);
+        }
+        animate(0);
+
+        // Animated G-code ticker
+        const gcodeDisplay = document.getElementById('gcode-display');
+        setInterval(() => {
+            const lines = gcodeDisplay.innerHTML.split('<br>');
+            lines.shift();
+            const newLine = `N${Math.floor(Math.random()*999)} G0${Math.floor(Math.random()*3)} X${(Math.random()*20).toFixed(3)} Y${(Math.random()*20).toFixed(3)}`;
+            lines.push(newLine);
+            gcodeDisplay.innerHTML = lines.join('<br>');
+        }, 1200);
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+                document.querySelectorAll('.project-card').forEach(card => {
+                    card.style.display = (filter === 'all' || card.dataset.category === filter) ? 'flex' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
 </html>
