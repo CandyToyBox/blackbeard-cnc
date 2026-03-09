@@ -93,7 +93,7 @@
         }
 
         .core-content {
-            padding: 40px 60px;
+            padding: 40px 60px 60px;
             display: flex;
             flex-direction: column;
             gap: 80px;
@@ -331,10 +331,62 @@
         .ch-tl { top: 10px; left: 10px; }
         .ch-br { bottom: 10px; right: 10px; }
 
+        /* Mobile bottom bar */
+        .mobile-bar {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 500;
+            background: rgba(5,5,5,0.97);
+            border-top: 1px solid var(--grey-mid);
+            grid-template-columns: 1fr 1fr 1fr;
+            height: 60px;
+        }
+        .mobile-bar a, .mobile-bar button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--grey-mid);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.15s;
+            padding: 0 5px;
+        }
+        .mobile-bar a:hover, .mobile-bar button:hover { color: var(--grey-light); }
+        .mobile-bar .bar-cta { color: var(--red); }
+        .bar-icon { font-size: 16px; line-height: 1; }
+
         @media (max-width: 1024px) {
             #ui-layer { grid-template-columns: 40px 1fr; }
             .sidebar-right { display: none; }
+            .core-content { padding: 30px 30px 80px; gap: 50px; }
             h1 { font-size: 5rem; }
+        }
+
+        @media (max-width: 768px) {
+            #ui-layer { grid-template-columns: 32px 1fr; border-left: none; border-right: none; }
+            .core-content { padding: 20px 16px 80px; gap: 40px; }
+            h1 { font-size: clamp(3.5rem, 14vw, 5rem); margin-left: 0; }
+            .services-grid { grid-template-columns: 1fr; }
+            .hero-meta { flex-direction: column; gap: 12px; }
+            .torch-container { display: none; }
+            .mobile-bar { display: grid; }
+            #past-work .btn-action { display: block; max-width: 320px; }
+        }
+
+        @media (max-width: 480px) {
+            .axis-y { display: none; }
+            #ui-layer { grid-template-columns: 1fr; }
+            .core-content { padding: 16px 12px 80px; }
+            h1 { font-size: clamp(3rem, 16vw, 4rem); }
         }
     </style>
 </head>
@@ -495,6 +547,13 @@
         </aside>
 
     </main>
+
+    <!-- Mobile bottom bar -->
+    <nav class="mobile-bar">
+        <a href="gallery.html"><span class="bar-icon">&#128247;</span>GALLERY</a>
+        <a href="gallery.html" class="bar-cta"><span class="bar-icon">&#9998;</span>GET QUOTE</a>
+        <a href="tel:8174558204"><span class="bar-icon">&#9990;</span>CALL</a>
+    </nav>
 
     <script>
         const container = document.getElementById('canvas-container');

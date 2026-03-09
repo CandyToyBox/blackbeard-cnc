@@ -82,6 +82,7 @@
 
         .core-content {
             padding: 40px 60px;
+            padding-bottom: 80px;
             display: flex;
             flex-direction: column;
             gap: 40px;
@@ -99,7 +100,7 @@
 
         .page-header h1 {
             font-family: var(--font-display);
-            font-size: 6rem;
+            font-size: clamp(3rem, 8vw, 6rem);
             line-height: 0.9;
             color: var(--grey-light);
             letter-spacing: -1px;
@@ -107,11 +108,15 @@
 
         .filter-bar {
             display: flex;
-            gap: 20px;
+            gap: 10px;
             border-bottom: 1px solid var(--grey-dark);
             padding-bottom: 15px;
             margin-bottom: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        .filter-bar::-webkit-scrollbar { display: none; }
 
         .filter-btn {
             background: transparent;
@@ -119,9 +124,12 @@
             color: var(--grey-mid);
             font-family: var(--font-mono);
             font-size: 11px;
-            padding: 5px 10px;
+            padding: 8px 12px;
             transition: all 0.2s;
-            cursor: crosshair;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .filter-btn.active, .filter-btn:hover {
@@ -131,7 +139,7 @@
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
 
@@ -144,10 +152,7 @@
             flex-direction: column;
         }
 
-        .project-card:hover {
-            border-color: var(--red);
-            box-shadow: 0 0 15px rgba(255, 26, 26, 0.1);
-        }
+        .project-card:hover { border-color: var(--red); box-shadow: 0 0 15px rgba(255,26,26,0.1); }
 
         .img-placeholder {
             width: 100%;
@@ -159,13 +164,10 @@
             overflow: hidden;
             position: relative;
             border-bottom: 1px solid var(--grey-dark);
+            cursor: zoom-in;
         }
 
-        .img-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .img-placeholder img { width: 100%; height: 100%; object-fit: cover; }
 
         .img-placeholder::after {
             content: '';
@@ -175,15 +177,9 @@
             background-size: 10px 10px;
             opacity: 0.2;
         }
+        .img-placeholder.has-photo::after { display: none; }
 
-        .img-placeholder.has-photo::after {
-            display: none;
-        }
-
-        .card-info {
-            padding: 20px;
-            flex-grow: 1;
-        }
+        .card-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
 
         .card-title {
             font-family: var(--font-display);
@@ -199,11 +195,15 @@
             margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
+            flex-grow: 1;
+            align-items: flex-end;
         }
+
+        .project-card:hover .card-title { color: var(--red); text-shadow: var(--red-glow); }
 
         .request-btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px 10px;
             background: transparent;
             border: 1px solid var(--grey-mid);
             color: var(--grey-mid);
@@ -211,20 +211,14 @@
             font-size: 11px;
             transition: all 0.2s;
             text-align: center;
-            text-decoration: none;
-            display: block;
+            cursor: pointer;
+            letter-spacing: 1px;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .project-card:hover .request-btn {
-            border-color: var(--red);
-            color: var(--red);
-        }
+        .project-card:hover .request-btn { border-color: var(--red); color: var(--red); }
 
-        .project-card:hover .card-title {
-            color: var(--red);
-            text-shadow: var(--red-glow);
-        }
-
+        /* ---- Sidebar ---- */
         .sidebar-right {
             border-left: 1px solid var(--grey-mid);
             padding: 20px;
@@ -238,11 +232,7 @@
             backdrop-filter: blur(2px);
         }
 
-        .terminal-block {
-            border: 1px solid var(--grey-dark);
-            padding: 15px;
-            background: rgba(10, 10, 10, 0.8);
-        }
+        .terminal-block { border: 1px solid var(--grey-dark); padding: 15px; background: rgba(10,10,10,0.8); }
 
         .terminal-header {
             display: flex;
@@ -275,33 +265,24 @@
             transition: all 0.2s;
             font-family: var(--font-mono);
             font-size: 11px;
-            cursor: crosshair;
+            cursor: pointer;
+            background: transparent;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
         }
+        .btn-action:hover { background: var(--red); color: var(--black); box-shadow: var(--red-glow); }
 
-        .btn-action:hover {
-            background: var(--red);
-            color: var(--black);
-            box-shadow: var(--red-glow);
-        }
-
-        .crosshair {
-            position: absolute;
-            width: 10px; height: 10px;
-            border: 1px solid var(--grey-mid);
-            opacity: 0.5;
-        }
+        .crosshair { position: absolute; width: 10px; height: 10px; border: 1px solid var(--grey-mid); opacity: 0.5; }
         .ch-tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
         .ch-br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
 
-        .img-placeholder { cursor: zoom-in; }
-
-        /* Lightbox */
+        /* ---- Lightbox ---- */
         #lightbox {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.92);
+            background: rgba(0,0,0,0.94);
             align-items: center;
             justify-content: center;
             cursor: zoom-out;
@@ -310,16 +291,16 @@
 
         #lightbox-inner {
             position: relative;
-            max-width: 90vw;
-            max-height: 90vh;
+            max-width: 92vw;
+            max-height: 88vh;
             border: 1px solid var(--grey-mid);
             box-shadow: 0 0 40px rgba(255,26,26,0.15);
         }
 
         #lightbox-img {
             display: block;
-            max-width: 90vw;
-            max-height: 90vh;
+            max-width: 92vw;
+            max-height: 88vh;
             object-fit: contain;
         }
 
@@ -327,7 +308,7 @@
             position: absolute;
             bottom: 0; left: 0; right: 0;
             padding: 10px 15px;
-            background: rgba(5,5,5,0.85);
+            background: rgba(5,5,5,0.9);
             font-size: 10px;
             letter-spacing: 2px;
             color: var(--grey-mid);
@@ -351,27 +332,251 @@
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(5,5,5,0.8);
+            background: rgba(5,5,5,0.85);
             border: 1px solid var(--grey-mid);
             color: var(--grey-mid);
             font-family: var(--font-mono);
             font-size: 11px;
-            padding: 15px 12px;
+            padding: 18px 14px;
             cursor: pointer;
             letter-spacing: 1px;
             transition: all 0.15s;
             z-index: 1001;
+            -webkit-tap-highlight-color: transparent;
         }
-        #lightbox-prev { left: 20px; }
-        #lightbox-next { right: 20px; }
-        #lightbox-prev:hover, #lightbox-next:hover {
-            border-color: var(--red);
-            color: var(--red);
+        #lightbox-prev { left: 10px; }
+        #lightbox-next { right: 10px; }
+        #lightbox-prev:hover, #lightbox-next:hover { border-color: var(--red); color: var(--red); }
+
+        /* ---- Request Form Modal ---- */
+        #form-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0,0,0,0.88);
+            align-items: flex-end;
+            justify-content: center;
+            cursor: default;
+        }
+        #form-modal.open { display: flex; }
+
+        #form-inner {
+            width: 100%;
+            max-width: 640px;
+            max-height: 92vh;
+            background: #0a0a0a;
+            border: 1px solid var(--grey-mid);
+            border-bottom: none;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            animation: slideUp 0.25s ease-out;
         }
 
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px 15px;
+            border-bottom: 1px solid var(--grey-dark);
+            position: sticky;
+            top: 0;
+            background: #0a0a0a;
+            z-index: 1;
+        }
+
+        .form-header h2 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--grey-light);
+            line-height: 1;
+        }
+
+        #form-close {
+            background: none;
+            border: none;
+            color: var(--grey-mid);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            padding: 5px;
+        }
+        #form-close:hover { color: var(--red); }
+
+        #request-form { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+        .field-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--grey-mid);
+        }
+
+        .field-input, .field-select, .field-textarea {
+            background: #111;
+            border: 1px solid var(--grey-dark);
+            color: var(--grey-light);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 10px 12px;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+            border-radius: 0;
+            cursor: text;
+        }
+
+        .field-input:focus, .field-select:focus, .field-textarea:focus {
+            border-color: var(--red);
+        }
+
+        .field-select { cursor: pointer; }
+
+        .field-textarea { resize: vertical; min-height: 90px; }
+
+        .field-input::placeholder, .field-textarea::placeholder {
+            color: var(--grey-mid);
+            text-transform: uppercase;
+        }
+
+        .field-divider {
+            height: 1px;
+            background: var(--grey-dark);
+            margin: 4px 0;
+        }
+
+        .field-section-label {
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--grey-mid);
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--grey-dark);
+        }
+
+        .file-drop {
+            border: 1px dashed var(--grey-mid);
+            padding: 20px;
+            text-align: center;
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: var(--grey-mid);
+            cursor: pointer;
+            transition: border-color 0.2s;
+            position: relative;
+        }
+        .file-drop:hover, .file-drop.drag-over { border-color: var(--red); color: var(--red); }
+        .file-drop input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        #file-list { font-size: 10px; color: var(--grey-mid); margin-top: 8px; }
+        #file-list span { display: block; }
+
+        .form-submit {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: var(--red);
+            border: none;
+            color: var(--black);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .form-submit:hover { opacity: 0.85; }
+        .form-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        #form-status {
+            padding: 14px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-align: center;
+            display: none;
+        }
+        #form-status.success { color: #95fe7c; background: rgba(149,254,124,0.08); border: 1px solid rgba(149,254,124,0.3); }
+        #form-status.error   { color: var(--red); background: rgba(255,26,26,0.08); border: 1px solid rgba(255,26,26,0.3); }
+
+        /* Honeypot */
+        .hp-field { position: absolute; left: -9999px; opacity: 0; }
+
+        /* ---- Mobile bottom bar ---- */
+        .mobile-bar {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 500;
+            background: rgba(5,5,5,0.97);
+            border-top: 1px solid var(--grey-mid);
+            grid-template-columns: 1fr 1fr 1fr;
+            height: 60px;
+        }
+
+        .mobile-bar a, .mobile-bar button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--grey-mid);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.15s;
+            padding: 0 5px;
+        }
+
+        .mobile-bar a:hover, .mobile-bar button:hover { color: var(--grey-light); }
+        .mobile-bar .bar-cta { color: var(--red); }
+        .mobile-bar .bar-cta:hover { color: #ff5555; }
+
+        .bar-icon { font-size: 16px; line-height: 1; }
+
+        /* ---- Responsive ---- */
         @media (max-width: 1024px) {
             #ui-layer { grid-template-columns: 40px 1fr; }
             .sidebar-right { display: none; }
+            .core-content { padding: 30px 30px 80px; }
+        }
+
+        @media (max-width: 768px) {
+            #ui-layer { grid-template-columns: 32px 1fr; border-left: none; border-right: none; }
+            .core-content { padding: 20px 16px 80px; gap: 24px; }
+            .page-header h1 { font-size: 3.2rem; }
+            .gallery-grid { grid-template-columns: 1fr; gap: 16px; }
+            .img-placeholder { height: 240px; }
+            .mobile-bar { display: grid; }
+            #lightbox-prev { left: 4px; padding: 14px 10px; }
+            #lightbox-next { right: 4px; padding: 14px 10px; }
+            #form-inner { max-height: 96vh; border: none; border-top: 1px solid var(--grey-mid); }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .axis-y { display: none; }
+            #ui-layer { grid-template-columns: 1fr; }
+            .core-content { padding: 16px 12px 80px; }
         }
     </style>
 </head>
@@ -410,11 +615,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.01 // SIGN</span>
                         <h3 class="card-title">GUITAR PICK SIGN</h3>
-                        <div class="card-meta">
-                            <span>MAT: COPPER</span>
-                            <span>USE: INTERIOR</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Guitar Pick Sign" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>MAT: COPPER</span><span>USE: INTERIOR</span></div>
+                        <button class="request-btn" onclick="openForm('Guitar Pick Sign')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -426,11 +628,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.02 // CUSTOM</span>
                         <h3 class="card-title">SCOTT GLASS BODY</h3>
-                        <div class="card-meta">
-                            <span>MAT: RAW STEEL</span>
-                            <span>TOL: &plusmn;0.010</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Scott Glass Body" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>MAT: RAW STEEL</span><span>TOL: &plusmn;0.010</span></div>
+                        <button class="request-btn" onclick="openForm('Scott Glass Guitar Body')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -442,11 +641,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.03 // FAB</span>
                         <h3 class="card-title">SPIDERWEB BRACKET</h3>
-                        <div class="card-meta">
-                            <span>MAT: RAW STEEL</span>
-                            <span>QTY: BATCH RUN</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Spiderweb Bracket" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>MAT: RAW STEEL</span><span>QTY: BATCH RUN</span></div>
+                        <button class="request-btn" onclick="openForm('Spiderweb Bracket')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -458,11 +654,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.04 // FAB</span>
                         <h3 class="card-title">GAS CYLINDER HOLDER</h3>
-                        <div class="card-meta">
-                            <span>DET: SPIDERWEB</span>
-                            <span>FAB: WELDED</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Gas Cylinder Holder" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>DET: SPIDERWEB</span><span>FAB: WELDED</span></div>
+                        <button class="request-btn" onclick="openForm('Gas Cylinder Holder')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -474,11 +667,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.05 // FAB</span>
                         <h3 class="card-title">WELDING CART FAB</h3>
-                        <div class="card-meta">
-                            <span>MAT: MIXED STEEL</span>
-                            <span>MODE: TIG</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Welding Cart Fab" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>MAT: MIXED STEEL</span><span>MODE: TIG</span></div>
+                        <button class="request-btn" onclick="openForm('Welding Cart Fab')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -490,11 +680,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.06 // SIGN</span>
                         <h3 class="card-title">NEIGHBOR'S ENVY</h3>
-                        <div class="card-meta">
-                            <span>CLR: GRN POWDER</span>
-                            <span>USE: EXTERIOR</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Neighbor's Envy Sign" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>CLR: GRN POWDER</span><span>USE: EXTERIOR</span></div>
+                        <button class="request-btn" onclick="openForm(&quot;Neighbor&#39;s Envy Sign&quot;)">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -506,11 +693,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.07 // CUSTOM</span>
                         <h3 class="card-title">MUDFLAP CUTS</h3>
-                        <div class="card-meta">
-                            <span>CLR: BLK/RED</span>
-                            <span>QTY: 1 PAIR</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Mudflap Cuts" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>CLR: BLK/RED</span><span>QTY: 1 PAIR</span></div>
+                        <button class="request-btn" onclick="openForm('Mudflap Cuts')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -522,11 +706,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.08 // SIGN</span>
                         <h3 class="card-title">NEIGHBOR'S ENVY II</h3>
-                        <div class="card-meta">
-                            <span>CLR: TWO-COLOR</span>
-                            <span>USE: EXTERIOR</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Neighbor's Envy Two-Color Sign" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>CLR: TWO-COLOR</span><span>USE: EXTERIOR</span></div>
+                        <button class="request-btn" onclick="openForm(&quot;Neighbor&#39;s Envy Two-Color Sign&quot;)">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -538,11 +719,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.09 // SIGN</span>
                         <h3 class="card-title">BROWN BOMBER SIGN</h3>
-                        <div class="card-meta">
-                            <span>CLR: TWO-COLOR</span>
-                            <span>USE: DISPLAY</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Brown Bomber Sign" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>CLR: TWO-COLOR</span><span>USE: DISPLAY</span></div>
+                        <button class="request-btn" onclick="openForm('Brown Bomber Sign')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -554,11 +732,8 @@
                     <div class="card-info">
                         <span class="sys-label">OBJ.10 // SIGN</span>
                         <h3 class="card-title">CUSTOM SIGNAGE</h3>
-                        <div class="card-meta">
-                            <span>MAT: STEEL</span>
-                            <span>USE: CUSTOM</span>
-                        </div>
-                        <a href="mailto:blackbeardcnc@outlook.com?subject=Request: Custom Signage" class="request-btn">REQUEST THIS CUT</a>
+                        <div class="card-meta"><span>MAT: STEEL</span><span>USE: CUSTOM</span></div>
+                        <button class="request-btn" onclick="openForm('Custom Signage')">REQUEST THIS CUT</button>
                     </div>
                 </article>
 
@@ -572,35 +747,33 @@
                     <span style="color:var(--red)">ACTIVE</span>
                 </div>
                 <div class="g-code-scroll" id="gcode-display">
-                    N10 G20 (INCHES)<br>
-                    N20 G90 (ABSOLUTE)<br>
-                    N30 M06 T1 (PLASMA)<br>
-                    N40 G00 X4.125 Y2.330<br>
-                    N50 M03 S1000<br>
-                    N60 G01 Z-0.125 F30.0<br>
-                    N70 G01 X8.250 Y2.330<br>
-                    N80 G02 X10.5 Y4.5 I2.25 J2.17<br>
-                    N90 G01 X10.5 Y12.0<br>
-                    N100 G03 X8.25 Y14.25 I-2.25 J0<br>
-                    N110 G01 X4.125 Y14.25<br>
-                    N120 M05<br>
+                    N10 G20 (INCHES)<br>N20 G90 (ABSOLUTE)<br>N30 M06 T1 (PLASMA)<br>
+                    N40 G00 X4.125 Y2.330<br>N50 M03 S1000<br>N60 G01 Z-0.125 F30.0<br>
+                    N70 G01 X8.250 Y2.330<br>N80 G02 X10.5 Y4.5 I2.25 J2.17<br>
+                    N90 G01 X10.5 Y12.0<br>N100 G03 X8.25 Y14.25 I-2.25 J0<br>
+                    N110 G01 X4.125 Y14.25<br>N120 M05<br>
                 </div>
             </div>
 
             <div class="terminal-block">
-                <div class="terminal-header">
-                    <span>NAV_LINKS</span>
-                </div>
+                <div class="terminal-header"><span>NAV_LINKS</span></div>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                     <a href="index.html" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; RETURN TO CONTROL</a>
-                    <a href="index.html#capabilities" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; CAPABILITIES</a>
-                    <a href="mailto:blackbeardcnc@outlook.com" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; CONTACT</a>
+                    <a href="index.html#services" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; CAPABILITIES</a>
+                    <a href="tel:8174558204" style="color:var(--grey-light); text-decoration:none; font-size:11px;">&gt; (817) 455-8204</a>
                 </div>
             </div>
 
-            <a href="mailto:blackbeardcnc@outlook.com?subject=Work Order Request" class="btn-action">INITIATE WORK ORDER</a>
+            <button class="btn-action" onclick="openForm('')">INITIATE WORK ORDER</button>
         </aside>
     </main>
+
+    <!-- Mobile bottom bar -->
+    <nav class="mobile-bar">
+        <a href="index.html"><span class="bar-icon">&#8592;</span>HOME</a>
+        <button class="bar-cta" onclick="openForm('')"><span class="bar-icon">&#9998;</span>GET QUOTE</button>
+        <a href="tel:8174558204"><span class="bar-icon">&#9990;</span>CALL</a>
+    </nav>
 
     <!-- Lightbox -->
     <div id="lightbox">
@@ -609,8 +782,100 @@
             <img id="lightbox-img" src="" alt="">
             <div id="lightbox-label"></div>
         </div>
-        <button id="lightbox-prev">&lt; PREV</button>
-        <button id="lightbox-next">NEXT &gt;</button>
+        <button id="lightbox-prev">&lt;</button>
+        <button id="lightbox-next">&gt;</button>
+    </div>
+
+    <!-- Request Form Modal -->
+    <div id="form-modal">
+        <div id="form-inner">
+            <div class="form-header">
+                <div>
+                    <div class="sys-label">BLACKBEARD CNC</div>
+                    <h2>WORK ORDER / QUOTE</h2>
+                </div>
+                <button id="form-close">[ CLOSE ]</button>
+            </div>
+
+            <form id="request-form" enctype="multipart/form-data">
+                <!-- Honeypot -->
+                <input class="hp-field" type="text" name="website" tabindex="-1" autocomplete="off">
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label class="field-label">NAME *</label>
+                        <input class="field-input" type="text" name="name" placeholder="Full Name" required autocomplete="name">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">PHONE *</label>
+                        <input class="field-input" type="tel" name="phone" placeholder="(xxx) xxx-xxxx" required autocomplete="tel">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label class="field-label">EMAIL *</label>
+                        <input class="field-input" type="email" name="email" placeholder="your@email.com" required autocomplete="email">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">REQUEST TYPE *</label>
+                        <select class="field-select" name="requestType" required>
+                            <option value="">-- SELECT --</option>
+                            <option value="quote">PRICE QUOTE</option>
+                            <option value="work_order">WORK ORDER</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-divider"></div>
+                <div class="field-section-label">PROJECT DETAILS</div>
+
+                <div class="field-group">
+                    <label class="field-label">PROJECT DESCRIPTION *</label>
+                    <textarea class="field-textarea" name="projectDescription" id="project-desc" placeholder="Describe what you need cut / fabricated..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label class="field-label">MATERIAL</label>
+                        <input class="field-input" type="text" name="material" placeholder="Steel, Copper, Aluminum...">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">DIMENSIONS</label>
+                        <input class="field-input" type="text" name="dimensions" placeholder="Width x Height x Thickness">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label class="field-label">QUANTITY</label>
+                        <input class="field-input" type="text" name="quantity" placeholder="1, 10, Batch Run...">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">TIMELINE</label>
+                        <input class="field-input" type="text" name="timeline" placeholder="ASAP, 2 weeks...">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">ADDITIONAL NOTES</label>
+                    <textarea class="field-textarea" name="notes" placeholder="Finish, color, special instructions..." style="min-height:70px;"></textarea>
+                </div>
+
+                <div class="field-divider"></div>
+                <div class="field-section-label">ATTACHMENTS (OPTIONAL — IMAGE / PDF / DXF, MAX 10MB EACH)</div>
+
+                <div class="file-drop" id="file-drop">
+                    <input type="file" name="files" id="file-input" multiple accept="image/*,.pdf,.dxf">
+                    TAP TO ATTACH FILES (UP TO 3)
+                </div>
+                <div id="file-list"></div>
+
+                <div id="form-status"></div>
+
+                <button class="form-submit" type="submit" id="form-submit-btn">SEND REQUEST &rarr;</button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -624,52 +889,39 @@
 
         const vertexShader = `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 1.0); }`;
         const fragmentShader = `
-            uniform float time;
-            uniform vec2 resolution;
-            varying vec2 vUv;
-            float random (in vec2 _st) { return fract(sin(dot(_st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
-            float noise (in vec2 _st) {
+            uniform float time; uniform vec2 resolution; varying vec2 vUv;
+            float random(in vec2 _st) { return fract(sin(dot(_st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
+            float noise(in vec2 _st) {
                 vec2 i = floor(_st); vec2 f = fract(_st);
-                float a = random(i); float b = random(i + vec2(1.0, 0.0));
-                float c = random(i + vec2(0.0, 1.0)); float d = random(i + vec2(1.0, 1.0));
-                vec2 u = f * f * (3.0 - 2.0 * f);
-                return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+                float a = random(i); float b = random(i + vec2(1.0,0.0));
+                float c = random(i + vec2(0.0,1.0)); float d = random(i + vec2(1.0,1.0));
+                vec2 u = f*f*(3.0-2.0*f);
+                return mix(a,b,u.x)+(c-a)*u.y*(1.0-u.x)+(d-b)*u.x*u.y;
             }
             void main() {
                 vec2 st = gl_FragCoord.xy/resolution.xy;
-                float f = noise(st * 10.0 + time * 0.05);
-                vec3 color = mix(vec3(0.02), vec3(0.1), smoothstep(0.4, 0.6, f));
-                gl_FragColor = vec4(color, 1.0);
-            }
-        `;
+                float f = noise(st*10.0+time*0.05);
+                vec3 color = mix(vec3(0.02),vec3(0.1),smoothstep(0.4,0.6,f));
+                gl_FragColor = vec4(color,1.0);
+            }`;
 
         const material = new THREE.ShaderMaterial({
             vertexShader, fragmentShader,
-            uniforms: {
-                time: { value: 0 },
-                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-            }
+            uniforms: { time: {value:0}, resolution: {value: new THREE.Vector2(window.innerWidth, window.innerHeight)} }
         });
-
-        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
-        scene.add(mesh);
-
-        function animate(now) {
-            requestAnimationFrame(animate);
-            material.uniforms.time.value = now * 0.001;
-            renderer.render(scene, camera);
-        }
+        scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
+        function animate(now) { requestAnimationFrame(animate); material.uniforms.time.value = now*0.001; renderer.render(scene,camera); }
         animate(0);
 
-        // Animated G-code ticker
         const gcodeDisplay = document.getElementById('gcode-display');
-        setInterval(() => {
-            const lines = gcodeDisplay.innerHTML.split('<br>');
-            lines.shift();
-            const newLine = `N${Math.floor(Math.random()*999)} G0${Math.floor(Math.random()*3)} X${(Math.random()*20).toFixed(3)} Y${(Math.random()*20).toFixed(3)}`;
-            lines.push(newLine);
-            gcodeDisplay.innerHTML = lines.join('<br>');
-        }, 1200);
+        if (gcodeDisplay) {
+            setInterval(() => {
+                const lines = gcodeDisplay.innerHTML.split('<br>');
+                lines.shift();
+                lines.push(`N${Math.floor(Math.random()*999)} G0${Math.floor(Math.random()*3)} X${(Math.random()*20).toFixed(3)} Y${(Math.random()*20).toFixed(3)}`);
+                gcodeDisplay.innerHTML = lines.join('<br>');
+            }, 1200);
+        }
 
         window.addEventListener('resize', () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -688,75 +940,140 @@
             });
         });
 
-        // Lightbox
-        const lightbox     = document.getElementById('lightbox');
-        const lbImg        = document.getElementById('lightbox-img');
-        const lbLabel      = document.getElementById('lightbox-label');
-        const lbClose      = document.getElementById('lightbox-close');
-        const lbPrev       = document.getElementById('lightbox-prev');
-        const lbNext       = document.getElementById('lightbox-next');
+        // ---- Lightbox ----
+        const lightbox = document.getElementById('lightbox');
+        const lbImg    = document.getElementById('lightbox-img');
+        const lbLabel  = document.getElementById('lightbox-label');
+        const lbClose  = document.getElementById('lightbox-close');
+        const lbPrev   = document.getElementById('lightbox-prev');
+        const lbNext   = document.getElementById('lightbox-next');
+        let lbGallery = [], lbCurrent = 0;
 
-        let gallery = [];   // [{src, label}]
-        let current = 0;
-
-        function buildGallery() {
-            gallery = [];
+        function buildLbGallery() {
+            lbGallery = [];
             document.querySelectorAll('.project-card').forEach(card => {
                 if (card.style.display === 'none') return;
-                const img  = card.querySelector('.img-placeholder img');
+                const img = card.querySelector('.img-placeholder img');
                 const title = card.querySelector('.card-title')?.textContent ?? '';
                 const label = card.querySelector('.sys-label')?.textContent ?? '';
-                if (img) gallery.push({ src: img.src, alt: img.alt, label: `${label} — ${title}` });
+                if (img) lbGallery.push({ src: img.src, alt: img.alt, label: `${label} — ${title}` });
             });
         }
 
         function openLightbox(src) {
-            buildGallery();
-            current = gallery.findIndex(g => g.src === src);
-            if (current === -1) current = 0;
-            showSlide(current);
+            buildLbGallery();
+            lbCurrent = lbGallery.findIndex(g => g.src === src);
+            if (lbCurrent === -1) lbCurrent = 0;
+            showSlide(lbCurrent);
             lightbox.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
         function showSlide(idx) {
-            const item = gallery[idx];
+            const item = lbGallery[idx];
             if (!item) return;
-            lbImg.src = item.src;
-            lbImg.alt = item.alt;
-            lbLabel.textContent = item.label;
-            lbPrev.style.display = gallery.length > 1 ? 'block' : 'none';
-            lbNext.style.display = gallery.length > 1 ? 'block' : 'none';
+            lbImg.src = item.src; lbImg.alt = item.alt; lbLabel.textContent = item.label;
+            lbPrev.style.display = lbGallery.length > 1 ? 'block' : 'none';
+            lbNext.style.display = lbGallery.length > 1 ? 'block' : 'none';
         }
 
-        function closeLightbox() {
-            lightbox.classList.remove('open');
-            document.body.style.overflow = '';
-        }
+        function closeLightbox() { lightbox.classList.remove('open'); document.body.style.overflow = ''; }
 
         document.querySelectorAll('.img-placeholder.has-photo').forEach(el => {
             el.addEventListener('click', () => openLightbox(el.querySelector('img').src));
         });
-
         lbClose.addEventListener('click', e => { e.stopPropagation(); closeLightbox(); });
         lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+        lbPrev.addEventListener('click', e => { e.stopPropagation(); lbCurrent = (lbCurrent-1+lbGallery.length)%lbGallery.length; showSlide(lbCurrent); });
+        lbNext.addEventListener('click', e => { e.stopPropagation(); lbCurrent = (lbCurrent+1)%lbGallery.length; showSlide(lbCurrent); });
 
-        lbPrev.addEventListener('click', e => {
-            e.stopPropagation();
-            current = (current - 1 + gallery.length) % gallery.length;
-            showSlide(current);
-        });
-        lbNext.addEventListener('click', e => {
-            e.stopPropagation();
-            current = (current + 1) % gallery.length;
-            showSlide(current);
-        });
+        // Touch swipe on lightbox
+        let tsX = 0;
+        lightbox.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; }, {passive:true});
+        lightbox.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - tsX;
+            if (Math.abs(dx) > 50) {
+                if (dx < 0) { lbCurrent = (lbCurrent+1)%lbGallery.length; }
+                else        { lbCurrent = (lbCurrent-1+lbGallery.length)%lbGallery.length; }
+                showSlide(lbCurrent);
+            }
+        }, {passive:true});
 
         document.addEventListener('keydown', e => {
             if (!lightbox.classList.contains('open')) return;
             if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft')  { current = (current - 1 + gallery.length) % gallery.length; showSlide(current); }
-            if (e.key === 'ArrowRight') { current = (current + 1) % gallery.length; showSlide(current); }
+            if (e.key === 'ArrowLeft')  { lbCurrent=(lbCurrent-1+lbGallery.length)%lbGallery.length; showSlide(lbCurrent); }
+            if (e.key === 'ArrowRight') { lbCurrent=(lbCurrent+1)%lbGallery.length; showSlide(lbCurrent); }
+        });
+
+        // ---- Request Form Modal ----
+        const formModal   = document.getElementById('form-modal');
+        const formClose   = document.getElementById('form-close');
+        const requestForm = document.getElementById('request-form');
+        const formStatus  = document.getElementById('form-status');
+        const submitBtn   = document.getElementById('form-submit-btn');
+        const projectDesc = document.getElementById('project-desc');
+        const fileInput   = document.getElementById('file-input');
+        const fileList    = document.getElementById('file-list');
+
+        function openForm(projectName) {
+            formStatus.style.display = 'none';
+            formStatus.className = '';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'SEND REQUEST →';
+            if (projectName) {
+                projectDesc.value = `I'm interested in a cut similar to: ${projectName}.\n\n`;
+            }
+            formModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => requestForm.querySelector('[name="name"]').focus(), 300);
+        }
+
+        function closeForm() {
+            formModal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        formClose.addEventListener('click', closeForm);
+        formModal.addEventListener('click', e => { if (e.target === formModal) closeForm(); });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && formModal.classList.contains('open')) closeForm();
+        });
+
+        fileInput.addEventListener('change', () => {
+            const names = Array.from(fileInput.files).map(f => `<span>&gt; ${f.name}</span>`).join('');
+            fileList.innerHTML = names || '';
+        });
+
+        requestForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'TRANSMITTING...';
+            formStatus.style.display = 'none';
+
+            try {
+                const fd = new FormData(requestForm);
+                const res = await fetch('/api/submit-request', { method: 'POST', body: fd });
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.ok) {
+                    formStatus.textContent = 'REQUEST TRANSMITTED. We\'ll be in touch shortly.';
+                    formStatus.className = 'success';
+                    formStatus.style.display = 'block';
+                    requestForm.reset();
+                    fileList.innerHTML = '';
+                    submitBtn.textContent = 'SENT';
+                } else {
+                    throw new Error(data.error || 'Transmission failed. Please try again.');
+                }
+            } catch (err) {
+                formStatus.textContent = `ERROR: ${err.message}`;
+                formStatus.className = 'error';
+                formStatus.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'SEND REQUEST →';
+            }
         });
     </script>
 </body>
